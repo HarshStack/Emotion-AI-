@@ -90,13 +90,17 @@ frontend/index.html
 
 in your browser (double-click or right-click → Open with Live Server).
 
+
+
 ⚙️ Environment Variables
 
 Create a .env file in your /backend folder with your API key:
 
 OPENAI_API_KEY=your_api_key_here
 
+
 📁 Project Structure
+
 MindfulAI/
 │
 ├── backend/
@@ -112,15 +116,18 @@ MindfulAI/
 │
 └── README.md
 
+
 💾 Data Handling
 
 All emotional data (mood logs, insights, profile info) is stored locally in the user’s browser using localStorage.
 You can export or delete all your data anytime via the Settings → Data & Privacy section.
 
+
 🔒 Privacy & Ethics
 
 MindfulAI never stores, shares, or tracks your data remotely.
 It’s built with an ethical AI mindset focused on privacy, empathy, and mental well-being.
+
 
 🧠 Future Enhancements
 🎤 Voice-based emotion detection & speech responses
