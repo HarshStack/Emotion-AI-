@@ -1,0 +1,2599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindfulAI - Your Emotional Companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s;
+            overflow: hidden;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode .container {
+            background: rgba(30, 30, 46, 0.95);
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .mood-tracker {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .mood-tracker h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .mood-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .mood-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mood-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .mood-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid white;
+        }
+
+        .menu {
+            list-style: none;
+        }
+
+        .menu li {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu li:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .menu li.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Weekly Report Dashboard */
+        .dashboard-container {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+            background: #f5f5f5;
+            transition: background 0.3s;
+            flex: 1;
+        }
+
+        body.dark-mode .dashboard-container {
+            background: #16162a;
+        }
+
+        .dashboard-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Mood Trends Dashboard */
+        .trends-container {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+            background: #f5f5f5;
+            transition: background 0.3s;
+            flex: 1;
+        }
+
+        body.dark-mode .trends-container {
+            background: #16162a;
+        }
+
+        .trends-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Settings Dashboard */
+        .settings-container {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+            background: #f5f5f5;
+            transition: background 0.3s;
+            flex: 1;
+        }
+
+        body.dark-mode .settings-container {
+            background: #16162a;
+        }
+
+        .settings-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-header {
+            padding: 30px;
+            background: white;
+            border-bottom: 2px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        body.dark-mode .dashboard-header {
+            background: #1e1e2e;
+            border-bottom: 2px solid #2a2a3e;
+        }
+
+        .dashboard-header h2 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        body.dark-mode .dashboard-header h2 {
+            color: #a8b3ff;
+        }
+
+        .dashboard-content {
+            padding: 30px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .stat-card {
+            background: #2a2a3e;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        body.dark-mode .stat-card h3 {
+            color: #a0a0a0;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .emotion-chart {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .emotion-chart {
+            background: #2a2a3e;
+        }
+
+        .emotion-chart h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .emotion-chart h3 {
+            color: #a8b3ff;
+        }
+
+        .emotion-bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .emotion-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .emotion-label {
+            min-width: 120px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        body.dark-mode .emotion-label {
+            color: #e0e0e0;
+        }
+
+        .emotion-bar-bg {
+            flex: 1;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.dark-mode .emotion-bar-bg {
+            background: #1e1e2e;
+        }
+
+        .emotion-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            transition: width 0.5s ease;
+        }
+
+        .insights-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .insights-section {
+            background: #2a2a3e;
+        }
+
+        .insights-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .insights-section h3 {
+            color: #a8b3ff;
+        }
+
+        .insight-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        body.dark-mode .insight-item {
+            background: #1e1e2e;
+        }
+
+        .insight-item h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .insight-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .insight-item p {
+            color: #a0a0a0;
+        }
+
+        /* Mood Calendar Styles */
+        .calendar-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .calendar-container {
+            background: #2a2a3e;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header h3 {
+            color: #667eea;
+            margin: 0;
+        }
+
+        body.dark-mode .calendar-header h3 {
+            color: #a8b3ff;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-nav button {
+            padding: 8px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .calendar-nav button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        body.dark-mode .calendar-day {
+            background: #1e1e2e;
+        }
+
+        .calendar-day:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .calendar-day-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .calendar-day-number {
+            color: #e0e0e0;
+        }
+
+        .calendar-day-emoji {
+            font-size: 24px;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #667eea;
+        }
+
+        .calendar-day.empty {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .calendar-day.empty:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .weekday-header {
+            font-weight: 600;
+            color: #667eea;
+            text-align: center;
+            padding: 10px;
+        }
+
+        body.dark-mode .weekday-header {
+            color: #a8b3ff;
+        }
+
+        /* Timeline Styles */
+        .timeline-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .timeline-container {
+            background: #2a2a3e;
+        }
+
+        .timeline-container h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .timeline-container h3 {
+            color: #a8b3ff;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 30px;
+            bottom: -20px;
+            width: 2px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 16px;
+            height: 16px;
+            background: #667eea;
+            border-radius: 50%;
+            border: 3px solid #f5f5f5;
+        }
+
+        body.dark-mode .timeline-dot {
+            border-color: #16162a;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        body.dark-mode .timeline-content {
+            background: #1e1e2e;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .timeline-emotion {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        /* Settings Card */
+        .settings-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .settings-card {
+            background: #2a2a3e;
+        }
+
+        .settings-card h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body.dark-mode .settings-card h3 {
+            color: #a8b3ff;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .setting-item {
+            background: #1e1e2e;
+        }
+
+        .setting-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .setting-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        body.dark-mode .setting-info h4 {
+            color: #e0e0e0;
+        }
+
+        .setting-info p {
+            color: #999;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 27px;
+        }
+
+        .data-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .data-card h3 {
+            margin-bottom: 15px;
+        }
+
+        .data-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .data-stat {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .data-stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .data-stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .danger-zone {
+            background: #fff5f5;
+            border: 2px solid #ff6b6b;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        body.dark-mode .danger-zone {
+            background: #3a2a2e;
+            border-color: #ff6b6b;
+        }
+
+        .danger-zone h4 {
+            color: #ff6b6b;
+            margin-bottom: 15px;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            height: 80px;
+        }
+
+        body.dark-mode .chat-header {
+            background: #1e1e2e;
+            border-bottom: 1px solid #2a2a3e;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+
+        .menu-toggle span {
+            width: 24px;
+            height: 3px;
+            background: #667eea;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .menu-toggle span {
+            background: #a8b3ff;
+        }
+
+        .menu-toggle:hover span {
+            background: #764ba2;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle {
+            background: #f0f0f0;
+            border: none;
+            width: 50px;
+            height: 26px;
+            border-radius: 13px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: #667eea;
+        }
+
+        .theme-toggle::before {
+            content: '☀️';
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        body.dark-mode .theme-toggle::before {
+            content: '🌙';
+            left: 27px;
+        }
+
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .profile-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .chat-header h2 {
+            color: #667eea;
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+
+        body.dark-mode .chat-header h2 {
+            color: #a8b3ff;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: #f44336;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 30px;
+            padding-bottom: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #f5f5f5;
+            scroll-behavior: smooth;
+            transition: background 0.3s;
+            height: 0; /* Important: allows flex to calculate height */
+            display: none;
+        }
+
+        .chat-messages.active {
+            display: block;
+        }
+
+        body.dark-mode .chat-messages {
+            background: #16162a;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .avatar.bot {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .avatar.user {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .message-content {
+            max-width: 60%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .emotion-badge {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+            margin-right: 5px;
+        }
+
+        body.dark-mode .emotion-badge {
+            background: rgba(168, 179, 255, 0.2);
+            color: #a8b3ff;
+        }
+
+        .emotion-details {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        body.dark-mode .emotion-details {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .emotion-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .emotion-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .message.bot .message-content {
+            background: #2a2a3e;
+            color: #e0e0e0;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-input-container {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            height: 90px;
+        }
+
+        body.dark-mode .chat-input-container {
+            background: #1e1e2e;
+            border-top: 1px solid #2a2a3e;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+            background: white;
+            color: #333;
+        }
+
+        body.dark-mode .chat-input {
+            background: #2a2a3e;
+            border-color: #3a3a4e;
+            color: #e0e0e0;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
+        .chat-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .send-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #999;
+            padding: 50px 20px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-message h3 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .welcome-message p {
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .scroll-to-bottom {
+            position: fixed;
+            bottom: 120px;
+            right: 340px;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            z-index: 100;
+            display: none;
+        }
+
+        .scroll-to-bottom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .scroll-to-bottom.show {
+            display: block;
+            animation: bounceIn 0.3s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        body.dark-mode .error-message {
+            background: #3a2a2e;
+            color: #ff6b6b;
+        }
+
+        /* Profile Modal */
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-modal.active {
+            display: flex;
+        }
+
+        .profile-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .profile-content {
+            background: #1e1e2e;
+            color: #e0e0e0;
+        }
+
+        .profile-content h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        body.dark-mode .profile-content h2 {
+            color: #a8b3ff;
+        }
+
+        .profile-avatar-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar-display {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        body.dark-mode .form-group label {
+            color: #a0a0a0;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .form-group input {
+            background: #2a2a3e;
+            border-color: #3a3a4e;
+            color: #e0e0e0;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+        }
+
+        .profile-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-save, .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        body.dark-mode .btn-cancel {
+            background: #2a2a3e;
+            color: #a0a0a0;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+                min-height: 600px;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .message-content {
+                max-width: 80%;
+            }
+
+            .scroll-to-bottom {
+                right: 20px;
+                bottom: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">🧠 MindfulAI</div>
+            
+            <div class="mood-tracker">
+                <h3>How are you feeling?</h3>
+                <p style="font-size: 12px; opacity: 0.8; margin-bottom: 10px;">Track your mood</p>
+                <div class="mood-options">
+                    <button class="mood-btn" onclick="selectMood(this, 'happy')" title="Happy">😊</button>
+                    <button class="mood-btn" onclick="selectMood(this, 'sad')" title="Sad">😢</button>
+                    <button class="mood-btn" onclick="selectMood(this, 'anxious')" title="Anxious">😰</button>
+                    <button class="mood-btn" onclick="selectMood(this, 'excited')" title="Excited">🤗</button>
+                    <button class="mood-btn" onclick="selectMood(this, 'angry')" title="Angry">😠</button>
+                    <button class="mood-btn" onclick="selectMood(this, 'calm')" title="Calm">😌</button>
+                </div>
+            </div>
+
+            <ul class="menu">
+                <li class="active" onclick="showSection('chat')">💬 Chat</li>
+                <li onclick="showSection('report')">📊 Weekly Report</li>
+                <li onclick="showSection('trends')">📈 Mood Trends</li>
+                <li onclick="showSection('settings')">⚙️ Settings</li>
+            </ul>
+            
+            <!-- Debug button -->
+            <button onclick="testWeeklyReport()" style="margin-top: 20px; padding: 10px; background: rgba(255,255,255,0.2); border: none; border-radius: 8px; color: white; cursor: pointer; width: 100%;">
+                🧪 Test Report (Debug)
+            </button>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <h2>Chat with MindfulAI</h2>
+                </div>
+                <div class="header-right">
+                    <div class="status">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span id="statusText">Connecting...</span>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode"></button>
+                    <button class="profile-btn" onclick="openProfile()" id="profileBtn">U</button>
+                </div>
+            </div>
+
+            <div class="chat-messages active" id="chatMessages">
+                <div class="welcome-message">
+                    <h3>Welcome to MindfulAI! 👋</h3>
+                    <p>I'm here to listen and support you. Share how you're feeling, and I'll be here for you every step of the way.</p>
+                    <p style="margin-top: 15px; font-size: 14px;">Start by typing a message below or select your mood from the sidebar.</p>
+                </div>
+            </div>
+
+            <!-- Weekly Report Dashboard -->
+            <div class="dashboard-container" id="weeklyReport">
+                <div class="dashboard-header">
+                    <h2>📊 Your Weekly Emotional Report</h2>
+                    <p style="color: #666; margin-top: 10px;">Overview of your emotional journey this week</p>
+                </div>
+                <div class="dashboard-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Conversations</h3>
+                            <div class="stat-value" id="totalChats">0</div>
+                            <div class="stat-label">messages exchanged</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Most Frequent Emotion</h3>
+                            <div class="stat-value" id="topEmotion">-</div>
+                            <div class="stat-label">this week</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Positive Interactions</h3>
+                            <div class="stat-value" id="positivePercent">0%</div>
+                            <div class="stat-label">of conversations</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Emotional Diversity</h3>
+                            <div class="stat-value" id="emotionCount">0</div>
+                            <div class="stat-label">unique emotions</div>
+                        </div>
+                    </div>
+
+                    <div class="emotion-chart">
+                        <h3>Top 10 Emotions This Week</h3>
+                        <div class="emotion-bar-chart" id="emotionBarChart">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="insights-section">
+                        <h3>💡 Insights & Recommendations</h3>
+                        <div id="insightsContainer">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mood Trends Dashboard -->
+            <div class="trends-container" id="moodTrends">
+                <div class="dashboard-header">
+                    <h2>📈 Mood Trends & Patterns</h2>
+                    <p style="color: #666; margin-top: 10px;">Track your emotional journey over time</p>
+                </div>
+                <div class="dashboard-content">
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <h3>📅 Mood Calendar</h3>
+                            <div class="calendar-nav">
+                                <button onclick="changeMonth(-1)">← Prev</button>
+                                <button onclick="changeMonth(1)">Next →</button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid" id="moodCalendar">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="timeline-container">
+                        <h3>⏱️ Recent Mood Timeline</h3>
+                        <div id="moodTimeline">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Most Positive Day</h3>
+                            <div class="stat-value" id="bestDay">-</div>
+                            <div class="stat-label">this month</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Mood Stability</h3>
+                            <div class="stat-value" id="stability">-</div>
+                            <div class="stat-label">consistency score</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Most Active Time</h3>
+                            <div class="stat-value" id="activeTime">-</div>
+                            <div class="stat-label">of day</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Weekly Trend</h3>
+                            <div class="stat-value" id="weeklyTrend">-</div>
+                            <div class="stat-label">vs last week</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Dashboard -->
+            <div class="settings-container" id="settingsPanel">
+                <div class="dashboard-header">
+                    <h2>⚙️ Settings & Preferences</h2>
+                    <p style="color: #666; margin-top: 10px;">Customize your MindfulAI experience</p>
+                </div>
+                <div class="dashboard-content">
+                    <div class="settings-card">
+                        <h3>🎨 Appearance</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Dark Mode</h4>
+                                <p>Switch between light and dark theme</p>
+                            </div>
+                            <div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()"></div>
+                        </div>
+                        <div class="setting-item" onclick="changeThemeColor()">
+                            <div class="setting-info">
+                                <h4>Theme Color</h4>
+                                <p>Choose your preferred color scheme</p>
+                            </div>
+                            <span style="font-size: 24px;">🎨</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>🔔 Notifications</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Daily Check-in Reminder</h4>
+                                <p>Get a reminder to log your mood daily</p>
+                            </div>
+                            <div class="toggle-switch" id="reminderToggle" onclick="toggleReminder()"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Weekly Summary</h4>
+                                <p>Receive weekly emotional insights</p>
+                            </div>
+                            <div class="toggle-switch active" id="summaryToggle" onclick="toggleSummary()"></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>🔐 Privacy & Data</h3>
+                        <div class="data-card">
+                            <h3>📊 Your Data</h3>
+                            <div class="data-stats">
+                                <div class="data-stat">
+                                    <div class="data-stat-value" id="totalMessages">0</div>
+                                    <div class="data-stat-label">Total Messages</div>
+                                </div>
+                                <div class="data-stat">
+                                    <div class="data-stat-value" id="dataSize">0 KB</div>
+                                    <div class="data-stat-label">Storage Used</div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn-action" onclick="exportData()">📥 Export Data</button>
+                                <button class="btn-action" onclick="backupData()">💾 Backup</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>👤 Profile</h3>
+                        <div class="setting-item" onclick="openProfile()">
+                            <div class="setting-info">
+                                <h4>Edit Profile</h4>
+                                <p>Update your name and information</p>
+                            </div>
+                            <span style="font-size: 24px;">✏️</span>
+                        </div>
+                        <div class="setting-item" onclick="changePassword()">
+                            <div class="setting-info">
+                                <h4>Change Password</h4>
+                                <p>Update your account security</p>
+                            </div>
+                            <span style="font-size: 24px;">🔒</span>
+                        </div>
+                    </div>
+
+                    <div class="danger-zone">
+                        <h4>⚠️ Danger Zone</h4>
+                        <p style="color: #666; margin-bottom: 15px;">These actions cannot be undone</p>
+                        <button class="btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="messageInput" 
+                    placeholder="Type your message here..." 
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="send-btn" onclick="sendMessage()" id="sendBtn">Send</button>
+            </div>
+        </div>
+
+        <!-- Scroll to bottom button (moved outside chat-container) -->
+        <button class="scroll-to-bottom" id="scrollToBottom" onclick="scrollToBottom()" title="Scroll to bottom">
+            ↓
+        </button>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-content">
+            <h2>Edit Profile</h2>
+            <div class="profile-avatar-section">
+                <div class="profile-avatar-display" id="profileAvatarDisplay">U</div>
+            </div>
+            <div class="form-group">
+                <label for="userName">Your Name</label>
+                <input type="text" id="userName" placeholder="Enter your name" value="User">
+            </div>
+            <div class="form-group">
+                <label for="userBio">Bio (Optional)</label>
+                <input type="text" id="userBio" placeholder="Tell us a bit about yourself">
+            </div>
+            <div class="profile-buttons">
+                <button class="btn-cancel" onclick="closeProfile()">Cancel</button>
+                <button class="btn-save" onclick="saveProfile()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - CHANGE THIS TO YOUR BACKEND URL
+        const BACKEND_URL = 'http://localhost:5000';  // Flask backend URL
+        
+        let currentMood = null;
+        let conversationHistory = [];
+        let userName = localStorage.getItem('userName') || 'User';
+        let userBio = localStorage.getItem('userBio') || '';
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+        let isBackendOnline = false;
+        let emotionLog = JSON.parse(localStorage.getItem('emotionLog')) || [];
+
+        // Initialize on page load
+        window.onload = function() {
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            updateProfileDisplay();
+            checkBackendHealth();
+            setupScrollListener();
+            updateWeeklyReport();
+        };
+
+        // Section Navigation
+        function showSection(sectionName) {
+            console.log('🔄 Switching to section:', sectionName);
+            
+            // Update menu active state
+            document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Hide all sections
+            const chatSection = document.getElementById('chatMessages');
+            const reportSection = document.getElementById('weeklyReport');
+            const trendsSection = document.getElementById('moodTrends');
+            const settingsSection = document.getElementById('settingsPanel');
+            const inputContainer = document.querySelector('.chat-input-container');
+
+            chatSection.classList.remove('active');
+            reportSection.classList.remove('active');
+            trendsSection.classList.remove('active');
+            settingsSection.classList.remove('active');
+
+            // Show selected section
+            if (sectionName === 'chat') {
+                console.log('✅ Showing chat section');
+                chatSection.classList.add('active');
+                inputContainer.style.display = 'flex';
+            } else if (sectionName === 'report') {
+                console.log('✅ Showing weekly report');
+                reportSection.classList.add('active');
+                inputContainer.style.display = 'none';
+                updateWeeklyReport();
+            } else if (sectionName === 'trends') {
+                console.log('✅ Showing mood trends');
+                trendsSection.classList.add('active');
+                inputContainer.style.display = 'none';
+                updateMoodTrends();
+            } else if (sectionName === 'settings') {
+                console.log('✅ Showing settings');
+                settingsSection.classList.add('active');
+                inputContainer.style.display = 'none';
+                updateSettings();
+            }
+        }
+
+        // Log emotion data
+        function logEmotion(emotion, message) {
+            const log = {
+                emotion: emotion,
+                message: message,
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleDateString()
+            };
+            
+            emotionLog.push(log);
+            
+            // Keep only last 100 entries
+            if (emotionLog.length > 100) {
+                emotionLog = emotionLog.slice(-100);
+            }
+            
+            localStorage.setItem('emotionLog', JSON.stringify(emotionLog));
+        }
+
+        // Update Weekly Report
+        function updateWeeklyReport() {
+            console.log('📊 Updating weekly report...');
+            console.log('Emotion log length:', emotionLog.length);
+            console.log('Emotion log data:', emotionLog);
+            
+            if (emotionLog.length === 0) {
+                console.log('⚠️ No data available');
+                // Show empty state
+                document.getElementById('totalChats').textContent = '0';
+                document.getElementById('topEmotion').textContent = '-';
+                document.getElementById('positivePercent').textContent = '0%';
+                document.getElementById('emotionCount').textContent = '0';
+                
+                document.getElementById('emotionBarChart').innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No data yet. Start chatting to see your emotional insights!</p>';
+                document.getElementById('insightsContainer').innerHTML = '<p style="color: #999;">Start having conversations to generate personalized insights.</p>';
+                return;
+            }
+
+            console.log('✅ Processing data...');
+
+            // Calculate stats
+            const totalChats = emotionLog.length;
+            
+            // Count emotions
+            const emotionCounts = {};
+            emotionLog.forEach(log => {
+                emotionCounts[log.emotion] = (emotionCounts[log.emotion] || 0) + 1;
+            });
+
+            console.log('Emotion counts:', emotionCounts);
+
+            // Get top emotion
+            const topEmotionEntry = Object.entries(emotionCounts).sort((a, b) => b[1] - a[1])[0];
+            const topEmotion = topEmotionEntry ? topEmotionEntry[0] : '-';
+
+            // Calculate positive percentage
+            const positiveEmotions = ['admiration', 'amusement', 'approval', 'caring', 'desire', 'excitement', 'gratitude', 'joy', 'love', 'optimism', 'pride', 'relief'];
+            const positiveCount = emotionLog.filter(log => positiveEmotions.includes(log.emotion)).length;
+            const positivePercent = totalChats > 0 ? Math.round((positiveCount / totalChats) * 100) : 0;
+
+            // Unique emotions count
+            const uniqueEmotions = Object.keys(emotionCounts).length;
+
+            console.log('Stats calculated:', { totalChats, topEmotion, positivePercent, uniqueEmotions });
+
+            // Update stats
+            document.getElementById('totalChats').textContent = totalChats;
+            document.getElementById('topEmotion').textContent = topEmotion;
+            document.getElementById('positivePercent').textContent = positivePercent + '%';
+            document.getElementById('emotionCount').textContent = uniqueEmotions;
+
+            // Update bar chart
+            const sortedEmotions = Object.entries(emotionCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const maxCount = sortedEmotions[0] ? sortedEmotions[0][1] : 1;
+
+            let chartHTML = '';
+            sortedEmotions.forEach(([emotion, count]) => {
+                const percentage = (count / maxCount) * 100;
+                chartHTML += `
+                    <div class="emotion-bar-item">
+                        <div class="emotion-label">${emotion}</div>
+                        <div class="emotion-bar-bg">
+                            <div class="emotion-bar-fill" style="width: ${percentage}%">${count}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('emotionBarChart').innerHTML = chartHTML;
+
+            // Generate insights
+            generateInsights(emotionLog, positivePercent, topEmotion);
+            
+            console.log('✅ Weekly report updated successfully!');
+        }
+
+        // Generate AI Insights
+        function generateInsights(logs, positivePercent, topEmotion) {
+            const insightsContainer = document.getElementById('insightsContainer');
+            let insights = [];
+
+            // Insight 1: Overall mood
+            if (positivePercent >= 70) {
+                insights.push({
+                    title: '🌟 Great Emotional Balance!',
+                    text: `You've maintained ${positivePercent}% positive emotions this week. Keep up the great work! Your emotional resilience is showing.`
+                });
+            } else if (positivePercent >= 40) {
+                insights.push({
+                    title: '💪 Room for Growth',
+                    text: `Your positive emotions are at ${positivePercent}%. Consider activities that bring you joy, like hobbies, exercise, or connecting with loved ones.`
+                });
+            } else {
+                insights.push({
+                    title: '💙 We\'re Here for You',
+                    text: `This week seems challenging with ${positivePercent}% positive emotions. Remember, it's okay to have tough weeks. Consider talking to a friend or counselor.`
+                });
+            }
+
+            // Insight 2: Top emotion
+            insights.push({
+                title: `🎭 Your Dominant Emotion: ${topEmotion}`,
+                text: `"${topEmotion}" was your most frequent emotion. Understanding your emotional patterns helps you respond more effectively to life's challenges.`
+            });
+
+            // Insight 3: Emotional diversity
+            const uniqueCount = logs.length > 0 ? new Set(logs.map(l => l.emotion)).size : 0;
+            if (uniqueCount >= 10) {
+                insights.push({
+                    title: '🎨 Rich Emotional Palette',
+                    text: `You experienced ${uniqueCount} different emotions this week. This emotional diversity shows healthy emotional processing and awareness.`
+                });
+            }
+
+            // Insight 4: Recent trend
+            const recentLogs = logs.slice(-10);
+            const recentPositive = recentLogs.filter(l => ['joy', 'gratitude', 'love', 'excitement', 'optimism'].includes(l.emotion)).length;
+            if (recentPositive >= 7) {
+                insights.push({
+                    title: '📈 Positive Trend',
+                    text: 'Your recent conversations show an upward trend in positive emotions. Something good is happening!'
+                });
+            }
+
+            // Render insights
+            let html = '';
+            insights.forEach(insight => {
+                html += `
+                    <div class="insight-item">
+                        <h4>${insight.title}</h4>
+                        <p>${insight.text}</p>
+                    </div>
+                `;
+            });
+
+            insightsContainer.innerHTML = html;
+        }
+
+        // Mood Trends Functions
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        function updateMoodTrends() {
+            console.log('📈 Updating mood trends...');
+            
+            // Update calendar
+            renderMoodCalendar();
+            
+            // Update timeline
+            renderMoodTimeline();
+            
+            // Update stats
+            updateTrendStats();
+        }
+
+        function renderMoodCalendar() {
+            const calendar = document.getElementById('moodCalendar');
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            
+            let html = '';
+            
+            // Weekday headers
+            const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            weekdays.forEach(day => {
+                html += `<div class="weekday-header">${day}</div>`;
+            });
+            
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                html += `<div class="calendar-day empty"></div>`;
+            }
+            
+            // Days with mood
+            const emotionEmojis = {
+                joy: '😊', sadness: '😢', anger: '😠', fear: '😨',
+                nervousness: '😰', excitement: '🤗', gratitude: '🙏',
+                love: '💕', disappointment: '😞', surprise: '😲',
+                pride: '🌟', confusion: '😕', curiosity: '🤔',
+                neutral: '😐'
+            };
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const dateStr = date.toLocaleDateString();
+                const dayLogs = emotionLog.filter(log => log.date === dateStr);
+                
+                const isToday = new Date().toDateString() === date.toDateString();
+                const todayClass = isToday ? 'today' : '';
+                
+                let emoji = '📝';
+                if (dayLogs.length > 0) {
+                    // Get most frequent emotion for that day
+                    const emotions = dayLogs.map(l => l.emotion);
+                    const mostFrequent = emotions.sort((a,b) =>
+                        emotions.filter(v => v===a).length - emotions.filter(v => v===b).length
+                    ).pop();
+                    emoji = emotionEmojis[mostFrequent] || '😊';
+                }
+                
+                html += `
+                    <div class="calendar-day ${todayClass}" onclick="showDayDetails('${dateStr}')">
+                        <div class="calendar-day-number">${day}</div>
+                        <div class="calendar-day-emoji">${emoji}</div>
+                    </div>
+                `;
+            }
+            
+            calendar.innerHTML = html;
+        }
+
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderMoodCalendar();
+        }
+
+        function showDayDetails(dateStr) {
+            const dayLogs = emotionLog.filter(log => log.date === dateStr);
+            if (dayLogs.length === 0) {
+                alert(`No mood data for ${dateStr}`);
+                return;
+            }
+            
+            const emotions = dayLogs.map(l => l.emotion).join(', ');
+            alert(`📅 ${dateStr}\n\n🎭 Emotions: ${emotions}\n💬 ${dayLogs.length} conversations`);
+        }
+
+        function renderMoodTimeline() {
+            const timeline = document.getElementById('moodTimeline');
+            const recentLogs = emotionLog.slice(-10).reverse();
+            
+            if (recentLogs.length === 0) {
+                timeline.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No mood data yet. Start chatting to build your timeline!</p>';
+                return;
+            }
+            
+            let html = '';
+            recentLogs.forEach(log => {
+                const date = new Date(log.timestamp);
+                const timeStr = date.toLocaleString();
+                
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">${timeStr}</div>
+                            <div class="timeline-emotion">${log.emotion}</div>
+                            <p style="color: #666; margin: 0;">${log.message.substring(0, 100)}...</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            timeline.innerHTML = html;
+        }
+
+        function updateTrendStats() {
+            // Most positive day
+            const dayGroups = {};
+            emotionLog.forEach(log => {
+                if (!dayGroups[log.date]) dayGroups[log.date] = [];
+                dayGroups[log.date].push(log.emotion);
+            });
+            
+            let bestDay = '-';
+            let bestScore = 0;
+            const positiveEmotions = ['joy', 'gratitude', 'love', 'excitement', 'optimism', 'pride'];
+            
+            Object.keys(dayGroups).forEach(date => {
+                const positiveCount = dayGroups[date].filter(e => positiveEmotions.includes(e)).length;
+                if (positiveCount > bestScore) {
+                    bestScore = positiveCount;
+                    bestDay = date;
+                }
+            });
+            
+            document.getElementById('bestDay').textContent = bestDay;
+            
+            // Mood stability
+            const uniqueEmotions = new Set(emotionLog.map(l => l.emotion)).size;
+            const stability = emotionLog.length > 0 ? Math.round((uniqueEmotions / emotionLog.length) * 100) : 0;
+            document.getElementById('stability').textContent = stability + '%';
+            
+            // Most active time
+            const hours = emotionLog.map(l => new Date(l.timestamp).getHours());
+            const avgHour = hours.length > 0 ? Math.round(hours.reduce((a, b) => a + b, 0) / hours.length) : 12;
+            let timeOfDay = 'Morning';
+            if (avgHour >= 12 && avgHour < 17) timeOfDay = 'Afternoon';
+            else if (avgHour >= 17) timeOfDay = 'Evening';
+            document.getElementById('activeTime').textContent = timeOfDay;
+            
+            // Weekly trend
+            const thisWeek = emotionLog.filter(l => {
+                const date = new Date(l.timestamp);
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return date > weekAgo;
+            });
+            const lastWeek = emotionLog.filter(l => {
+                const date = new Date(l.timestamp);
+                const twoWeeksAgo = new Date();
+                twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return date > twoWeeksAgo && date <= weekAgo;
+            });
+            
+            const trend = thisWeek.length - lastWeek.length;
+            const trendText = trend > 0 ? `+${trend} 📈` : trend < 0 ? `${trend} 📉` : '→ Stable';
+            document.getElementById('weeklyTrend').textContent = trendText;
+        }
+
+        // Settings Functions
+        function updateSettings() {
+            console.log('⚙️ Updating settings...');
+            
+            // Update dark mode toggle
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (isDarkMode) {
+                darkModeToggle.classList.add('active');
+            } else {
+                darkModeToggle.classList.remove('active');
+            }
+            
+            // Update data stats
+            document.getElementById('totalMessages').textContent = emotionLog.length;
+            const dataSize = new Blob([JSON.stringify(emotionLog)]).size / 1024;
+            document.getElementById('dataSize').textContent = dataSize.toFixed(2) + ' KB';
+        }
+
+        function toggleDarkMode() {
+            toggleTheme();
+            updateSettings();
+        }
+
+        function toggleReminder() {
+            const toggle = document.getElementById('reminderToggle');
+            toggle.classList.toggle('active');
+            const enabled = toggle.classList.contains('active');
+            alert(enabled ? '✅ Daily reminders enabled!' : '❌ Daily reminders disabled');
+        }
+
+        function toggleSummary() {
+            const toggle = document.getElementById('summaryToggle');
+            toggle.classList.toggle('active');
+            const enabled = toggle.classList.contains('active');
+            alert(enabled ? '✅ Weekly summaries enabled!' : '❌ Weekly summaries disabled');
+        }
+
+        function changeThemeColor() {
+            alert('🎨 Theme color customization coming soon!');
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(emotionLog, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'mindfulai-export.json';
+            link.click();
+            alert('✅ Data exported successfully!');
+        }
+
+        function backupData() {
+            localStorage.setItem('emotionLog_backup', JSON.stringify(emotionLog));
+            alert('✅ Data backed up locally!');
+        }
+
+        function changePassword() {
+            alert('🔒 Password change functionality coming soon!');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Are you sure you want to delete all your data? This cannot be undone!')) {
+                if (confirm('🚨 Last chance! This will permanently delete all your conversations and mood data.')) {
+                    localStorage.removeItem('emotionLog');
+                    emotionLog = [];
+                    alert('✅ All data cleared successfully');
+                    location.reload();
+                }
+            }
+        }
+
+        // Test function for debugging
+        function testWeeklyReport() {
+            console.log('🧪 Testing Weekly Report...');
+            console.log('Current emotion log:', emotionLog);
+            
+            if (emotionLog.length === 0) {
+                alert('No conversations yet! Chat first, then check the report.\n\nOr click "Add Test Data" to see how it works.');
+                
+                if (confirm('Would you like to add some test data?')) {
+                    // Add test data
+                    const testEmotions = ['joy', 'gratitude', 'excitement', 'nervousness', 'sadness', 'love', 'admiration', 'curiosity'];
+                    testEmotions.forEach(emotion => {
+                        logEmotion(emotion, `Test message with ${emotion}`);
+                    });
+                    
+                    alert('✅ Test data added! Now click "📊 Weekly Report" to see the dashboard.');
+                    console.log('✅ Test data added:', emotionLog);
+                }
+            } else {
+                alert(`✅ You have ${emotionLog.length} conversations logged!\n\nClick "📊 Weekly Report" to view your dashboard.`);
+            }
+        }
+
+        // Setup scroll listener for scroll-to-bottom button
+        function setupScrollListener() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const scrollBtn = document.getElementById('scrollToBottom');
+            
+            messagesContainer.addEventListener('scroll', function() {
+                const isNearBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight < 100;
+                
+                if (isNearBottom) {
+                    scrollBtn.classList.remove('show');
+                } else {
+                    scrollBtn.classList.add('show');
+                }
+            });
+        }
+
+        // Scroll to bottom function
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTo({
+                top: messagesContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // Auto scroll to bottom when new message is added
+        function autoScrollToBottom() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const isNearBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight < 150;
+            
+            // Only auto-scroll if user is near the bottom
+            if (isNearBottom || conversationHistory.length <= 2) {
+                setTimeout(() => {
+                    messagesContainer.scrollTo({
+                        top: messagesContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+        }
+
+        // Check if backend is running
+        async function checkBackendHealth() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    isBackendOnline = true;
+                    updateStatus('Online', true);
+                    console.log('✅ Backend connected successfully!');
+                } else {
+                    throw new Error('Backend not responding');
+                }
+            } catch (error) {
+                isBackendOnline = false;
+                updateStatus('Offline', false);
+                console.error('❌ Backend connection failed:', error);
+                showErrorMessage('Cannot connect to backend server. Please make sure Flask is running on port 5000.');
+            }
+        }
+
+        function updateStatus(text, online) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            statusText.textContent = text;
+            if (online) {
+                statusDot.classList.remove('offline');
+            } else {
+                statusDot.classList.add('offline');
+            }
+        }
+
+        function showErrorMessage(message) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const welcomeMsg = messagesContainer.querySelector('.welcome-message');
+            if (welcomeMsg) welcomeMsg.remove();
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <strong>⚠️ Connection Error</strong><br>
+                ${message}<br><br>
+                <small>Run: <code>cd backend && python app.py</code></small>
+            `;
+            messagesContainer.appendChild(errorDiv);
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            if (window.innerWidth <= 768) {
+                sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+            }
+        }
+
+        function openProfile() {
+            document.getElementById('profileModal').classList.add('active');
+            document.getElementById('userName').value = userName;
+            document.getElementById('userBio').value = userBio;
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        function saveProfile() {
+            userName = document.getElementById('userName').value || 'User';
+            userBio = document.getElementById('userBio').value || '';
+            
+            localStorage.setItem('userName', userName);
+            localStorage.setItem('userBio', userBio);
+            
+            updateProfileDisplay();
+            closeProfile();
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            const welcomeMsg = messagesContainer.querySelector('.welcome-message');
+            if (welcomeMsg && conversationHistory.length === 0) {
+                addMessage(`Great to meet you, ${userName}! How are you feeling today?`, 'bot');
+            }
+        }
+
+        function updateProfileDisplay() {
+            const initial = userName.charAt(0).toUpperCase();
+            document.getElementById('profileBtn').textContent = initial;
+            document.getElementById('profileAvatarDisplay').textContent = initial;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('profileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProfile();
+            }
+        });
+
+        function selectMood(button, mood) {
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentMood = mood;
+            
+            const moodMessages = {
+                happy: "I'm feeling happy today! 😊",
+                sad: "I'm feeling a bit down...",
+                anxious: "I'm feeling anxious right now.",
+                excited: "I'm so excited!",
+                angry: "I'm feeling frustrated.",
+                calm: "I'm feeling calm and peaceful."
+            };
+            
+            document.getElementById('messageInput').value = moodMessages[mood];
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+
+            // Check backend connection first
+            if (!isBackendOnline) {
+                await checkBackendHealth();
+                if (!isBackendOnline) {
+                    alert('Backend server is not running. Please start the Flask server first.');
+                    return;
+                }
+            }
+
+            const messagesContainer = document.getElementById('chatMessages');
+            const welcomeMsg = messagesContainer.querySelector('.welcome-message');
+            if (welcomeMsg) welcomeMsg.remove();
+
+            const errorMsg = messagesContainer.querySelector('.error-message');
+            if (errorMsg) errorMsg.remove();
+
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Disable input while processing
+            setInputState(false);
+
+            conversationHistory.push({role: 'user', content: message});
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Call Flask API
+            await getAIResponse(message);
+            
+            // Re-enable input
+            setInputState(true);
+        }
+
+        function setInputState(enabled) {
+            const input = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            input.disabled = !enabled;
+            sendBtn.disabled = !enabled;
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar bot';
+            avatar.textContent = 'AI';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.innerHTML = '<span style="opacity: 0.5;">Typing...</span>';
+            
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(content);
+            messagesContainer.appendChild(typingDiv);
+            
+            // Auto scroll to bottom
+            autoScrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        async function getAIResponse(userMessage) {
+            try {
+                console.log('🔄 Sending request to Flask backend...');
+                console.log('📝 Message:', userMessage);
+                console.log('🔗 URL:', `${BACKEND_URL}/api/chat`);
+                
+                const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        history: conversationHistory,
+                        userName: userName
+                    })
+                });
+
+                console.log('📡 Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ API Error Response:', errorText);
+                    throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                console.log('✅ Received response:', data);
+                console.log('🎭 Detected emotion:', data.emotion);
+                console.log('💬 AI response:', data.response);
+                
+                if (data.success) {
+                    const aiResponse = data.response;
+                    const emotion = data.emotion;
+                    
+                    removeTypingIndicator();
+                    addMessage(aiResponse, 'bot', emotion);
+                    conversationHistory.push({role: 'assistant', content: aiResponse});
+                    
+                    // Get detailed emotion breakdown
+                    getEmotionBreakdown(userMessage);
+                } else {
+                    console.error('❌ Response marked as unsuccessful:', data);
+                    throw new Error(data.error || 'Invalid response from server');
+                }
+
+            } catch (error) {
+                console.error('❌ Error calling Flask API:', error);
+                console.log('⚠️ Falling back to local responses');
+                removeTypingIndicator();
+                
+                // Show error and use fallback
+                const fallbackResponse = generateLocalResponse(userMessage);
+                addMessage(`${fallbackResponse}\n\n⚠️ Note: Backend not responding. Using offline mode.`, 'bot');
+                conversationHistory.push({role: 'assistant', content: fallbackResponse});
+                
+                // Update status
+                isBackendOnline = false;
+                updateStatus('Offline - Check Console (F12)', false);
+            }
+        }
+
+        function addMessage(text, sender, emotion = null) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = `avatar ${sender}`;
+            avatar.textContent = sender === 'user' ? userName.charAt(0).toUpperCase() : 'AI';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = text;
+            
+            // Add emotion badge for bot messages
+            if (sender === 'bot' && emotion) {
+                const badge = document.createElement('div');
+                badge.className = 'emotion-badge';
+                badge.textContent = `Emotion: ${emotion}`;
+                content.appendChild(document.createElement('br'));
+                content.appendChild(badge);
+            }
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            messagesContainer.appendChild(messageDiv);
+            
+            // Auto scroll to bottom
+            autoScrollToBottom();
+        }
+
+        async function getEmotionBreakdown(text) {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/emotion-breakdown`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📊 Emotion Breakdown:', data);
+                    console.log('Top 5 emotions:', data.top_5);
+                    
+                    // Display top emotions in console
+                    if (data.top_5) {
+                        console.table(data.top_5.map(e => ({
+                            Emotion: e.label,
+                            Confidence: `${(e.score * 100).toFixed(1)}%`
+                        })));
+                    }
+                }
+            } catch (error) {
+                console.error('Error getting emotion breakdown:', error);
+            }
+        }
+
+        function generateLocalResponse(userMessage) {
+            const msg = userMessage.toLowerCase();
+            
+            // Better emotion detection
+            let detectedEmotion = 'neutral';
+            
+            // Check for specific emotions
+            if (msg.match(/happy|joy|great|wonderful|amazing|fantastic|excited|love|perfect/i)) {
+                detectedEmotion = Math.random() > 0.5 ? 'joy' : 'excitement';
+            } else if (msg.match(/sad|down|depressed|miserable|upset|hurt|lonely/i)) {
+                detectedEmotion = Math.random() > 0.5 ? 'sadness' : 'disappointment';
+            } else if (msg.match(/anxious|worried|nervous|stressed|scared|afraid|fear/i)) {
+                detectedEmotion = Math.random() > 0.5 ? 'nervousness' : 'fear';
+            } else if (msg.match(/angry|mad|furious|frustrated|annoyed|irritated/i)) {
+                detectedEmotion = Math.random() > 0.5 ? 'anger' : 'annoyance';
+            } else if (msg.match(/thank|grateful|appreciate|gratitude/i)) {
+                detectedEmotion = 'gratitude';
+            } else if (msg.match(/calm|peaceful|relaxed|serene/i)) {
+                detectedEmotion = 'relief';
+            } else if (msg.match(/proud|accomplished|achieved/i)) {
+                detectedEmotion = 'pride';
+            } else if (msg.match(/confused|don't understand|unclear/i)) {
+                detectedEmotion = 'confusion';
+            } else if (msg.match(/curious|wonder|interested/i)) {
+                detectedEmotion = 'curiosity';
+            }
+            
+            const responses = {
+                joy: [
+                    `That's wonderful, ${userName}! Your happiness is contagious! 😊 What's bringing you this joy?`,
+                    `I can feel your positive energy, ${userName}! Keep riding this beautiful wave! 🌟`,
+                    `${userName}, your joy lights up the conversation! Tell me more about what's making you so happy!`
+                ],
+                excitement: [
+                    `${userName}, your excitement is infectious! 🎉 I'd love to hear all about it!`,
+                    `Wow, ${userName}! I can feel your enthusiasm from here! What's got you so pumped?`,
+                    `This is amazing, ${userName}! Your energy is incredible! Share more!`
+                ],
+                sadness: [
+                    `${userName}, I'm here for you. 💙 It's completely okay to feel this way. Would you like to talk about what's weighing on your heart?`,
+                    `I hear you, ${userName}. Your feelings are valid. Remember, tough times don't last forever. I'm here to listen.`,
+                    `${userName}, it takes courage to share when you're feeling down. Let's work through this together. What's going on?`
+                ],
+                disappointment: [
+                    `${userName}, disappointment is tough. I understand. 💙 Want to tell me what happened?`,
+                    `I'm sorry you're feeling let down, ${userName}. Your feelings matter. What's on your mind?`
+                ],
+                nervousness: [
+                    `${userName}, I understand anxiety can feel overwhelming. 🌸 Let's take a moment together. What's causing these feelings?`,
+                    `It's natural to feel nervous, ${userName}. You're not alone in this. I'm here with you. Want to talk about it?`,
+                    `${userName}, your feelings are completely valid. Let's work through this anxiety together. What's worrying you?`
+                ],
+                fear: [
+                    `${userName}, it's okay to feel scared. I'm here with you. 🌸 What's frightening you right now?`,
+                    `Fear is a natural response, ${userName}. Let's face this together. Tell me what's scaring you.`
+                ],
+                anger: [
+                    `${userName}, I can sense your frustration, and that's completely okay. 🌿 Let's talk about what happened.`,
+                    `Your anger is a valid emotion, ${userName}. I'm here to listen without judgment. What's bothering you?`,
+                    `I hear you, ${userName}. It sounds like something really got to you. Want to share what's making you feel this way?`
+                ],
+                annoyance: [
+                    `${userName}, I hear that this is bothering you. What's getting under your skin?`,
+                    `Sounds frustrating, ${userName}. Tell me more about what's annoying you.`
+                ],
+                gratitude: [
+                    `${userName}, it's beautiful that you're feeling thankful! 🙏 Gratitude is such a powerful emotion. What are you grateful for?`,
+                    `I love this, ${userName}! Your appreciation warms my heart. Tell me more!`,
+                    `${userName}, gratitude is a gift. Thank you for sharing this positive energy! What's inspiring this thankfulness?`
+                ],
+                relief: [
+                    `${userName}, I'm so glad you're feeling better! 😌 That sense of relief is wonderful. What changed?`,
+                    `What a relief, ${userName}! I can feel that weight lifting. Tell me about it!`
+                ],
+                pride: [
+                    `${userName}, you absolutely should be proud! 🌟 Your accomplishment matters. Tell me all about it!`,
+                    `This is fantastic, ${userName}! Your pride is well-deserved. Share your success with me!`
+                ],
+                confusion: [
+                    `${userName}, confusion is okay. Let's work through this together. 🤔 What's unclear?`,
+                    `I understand, ${userName}. Let's figure this out step by step. What's confusing you?`
+                ],
+                curiosity: [
+                    `${userName}, I love your inquisitive spirit! 💡 What are you curious about?`,
+                    `Great question, ${userName}! Your curiosity shows you're engaged. Let's explore this together!`
+                ],
+                neutral: [
+                    `I'm listening, ${userName}. Tell me more about what's on your mind.`,
+                    `${userName}, I'm here for you. How can I support you today?`,
+                    `Thank you for sharing, ${userName}. Would you like to explore that feeling further?`
+                ]
+            };
+
+            const responseArray = responses[detectedEmotion] || responses.neutral;
+            return responseArray[Math.floor(Math.random() * responseArray.length)];
+        }
+    </script>
+</body>
+</html>
