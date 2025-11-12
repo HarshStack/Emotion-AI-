@@ -21,16 +21,19 @@ It displays **emotion tags** (like joy, calm, relief) in responses and logs them
 <img width="1919" height="1014" alt="Screenshot 2025-11-12 052154" src="https://github.com/user-attachments/assets/7c2abf85-14d8-49bd-9f89-fbdbb933f7ca" />
 
 
+
 📊 Weekly Emotional Report
 Get a detailed summary of your emotional journey — total chats, most frequent emotion, positive percentage, and top 10 emotions.
 
 <img width="1913" height="1021" alt="Screenshot 2025-11-12 052046" src="https://github.com/user-attachments/assets/edd5f54e-e9e1-4381-a0ff-7c7502c2b2ac" />
 
 
+
 📈 Mood Trends & Patterns
 View a mood calendar, emotion timeline, and identify your most positive days, stability, and trends over weeks.
 
 <img width="1915" height="1004" alt="Screenshot 2025-11-12 052104" src="https://github.com/user-attachments/assets/755d1e18-1be2-47af-a658-e23a9a7b2a86" />
+
 
 
 ⚙️ Settings & Preferences
@@ -93,14 +96,11 @@ in your browser (double-click or right-click → Open with Live Server).
 
 
 ⚙️ Environment Variables
-
 Create a .env file in your /backend folder with your API key:
-
 OPENAI_API_KEY=your_api_key_here
 
 
 📁 Project Structure
-
 MindfulAI/
 │
 ├── backend/
@@ -118,23 +118,21 @@ MindfulAI/
 
 
 💾 Data Handling
-
 All emotional data (mood logs, insights, profile info) is stored locally in the user’s browser using localStorage.
 You can export or delete all your data anytime via the Settings → Data & Privacy section.
 
 
 🔒 Privacy & Ethics
-
 MindfulAI never stores, shares, or tracks your data remotely.
 It’s built with an ethical AI mindset focused on privacy, empathy, and mental well-being.
 
 
 🧠 Future Enhancements
-🎤 Voice-based emotion detection & speech responses
-📱 Mobile-responsive PWA version
-☁️ Secure cloud sync for multi-device use
-📘 Journal & reflection suggestions based on weekly trends
-🧩 Integration with wearable health data
+Voice-based emotion detection & speech responses
+Mobile-responsive PWA version
+Secure cloud sync for multi-device use
+Journal & reflection suggestions based on weekly trends
+Integration with wearable health data
 
 ## 🛠️ Setup & Installation
 
